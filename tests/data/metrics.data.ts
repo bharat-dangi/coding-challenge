@@ -1,3 +1,6 @@
+import { AccountCategory } from "../../src/constants/accountCategory.constant";
+import { AccountType } from "../../src/constants/accountType.constants";
+import { ValueType } from "../../src/constants/valueType.constant";
 import { AccountData } from "../../src/types/accountData.types";
 
 export const sampleData: AccountData[] = [
@@ -33,3 +36,48 @@ export const sampleData: AccountData[] = [
   },
 ];
 
+export const sampleDataForWorkingCapitalRatio: AccountData[] = [
+  // Assets
+  {
+    account_category: AccountCategory.ASSETS,
+    account_code: "100",
+    account_currency: "AUD",
+    account_identifier: "asset-1",
+    value_type: ValueType.Debit,
+    account_name: "Cash",
+    account_type: AccountType.Current,
+    total_value: 10000,
+  },
+  {
+    account_category: AccountCategory.ASSETS,
+    account_code: "101",
+    account_currency: "AUD",
+    account_identifier: "asset-2",
+    value_type: ValueType.Debit,
+    account_name: "Accounts Receivable",
+    account_type: AccountType.CurrentAccountReceivable,
+    total_value: 5000,
+  },
+
+  // Liabilities
+  {
+    account_category: AccountCategory.LIABILITY,
+    account_code: "200",
+    account_currency: "AUD",
+    account_identifier: "liability-1",
+    value_type: ValueType.Credit,
+    account_name: "Accounts Payable",
+    account_type: AccountType.CurrentAccountPayable,
+    total_value: 7000,
+  },
+  {
+    account_category: AccountCategory.LIABILITY,
+    account_code: "201",
+    account_currency: "AUD",
+    account_identifier: "liability-2",
+    value_type: ValueType.Debit,
+    account_name: "Accounts Payable",
+    account_type: AccountType.CurrentAccountPayable,
+    total_value: 3000,
+  },
+];

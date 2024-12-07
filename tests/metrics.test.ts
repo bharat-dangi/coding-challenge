@@ -1,4 +1,7 @@
+import { AccountCategory } from "../src/constants/accountCategory.constant";
+import { AccountType } from "../src/constants/accountType.constants";
 import { MetricsType } from "../src/constants/metricsType.constant";
+import { ValueType } from "../src/constants/valueType.constant";
 import { MetricCalculatorFactory } from "../src/factories/metricCalculatorFactory";
 import {
   sampleData,
@@ -17,6 +20,9 @@ const grossProfitMarginCalculator = MetricCalculatorFactory.getCalculator(
 );
 const netProfitMarginCalculator = MetricCalculatorFactory.getCalculator(
   MetricsType.NetProfitMargin,
+);
+const workingCapitalRatioCalculator = MetricCalculatorFactory.getCalculator(
+  MetricsType.WorkingCapitalRatio,
 );
 
 // Test cases for RevenueCalculator
@@ -138,5 +144,104 @@ describe("NetProfitMarginCalculator", () => {
       { revenue: 1830.18, expenses: 53931.0 },
     );
     expect(margin).toBe(-2846.7593351473624); // Expenses > Revenue, so negative margin
+  });
+});
+
+// Test case for Working Capital Ratio
+describe("WorkingCapitalRatioCalculator", () => {
+  // Test case 1: Normal working capital ratio calculation
+  it("should calculate working capital ratio correctly", () => {
+    const assets = 10000 + 5000; // Cash + Accounts Receivable (debit entries)
+    const liabilities = 7000 - 3000; // Accounts Payable (credit - debit)
+    const expectedRatio = (assets / liabilities) * 100; // (15000 / 4000) * 100 = 375%
+    const result = workingCapitalRatioCalculator.calculate(
+      sampleDataForWorkingCapitalRatio,
+    );
+    expect(result).toBeCloseTo(expectedRatio, 1); // Close to the expected value with 1 decimal precision
+  });
+
+  // Test case 2: If there are no liabilities, the ratio should be 0
+  it("should return 0 when there are no liabilities", () => {
+    const sampleDataNoLiabilities = sampleDataForWorkingCapitalRatio.filter(
+      (data) => data.account_category !== AccountCategory.LIABILITY,
+    );
+
+    const result = workingCapitalRatioCalculator.calculate(
+      sampleDataNoLiabilities,
+    );
+    expect(result).toBe(0); // No liabilities means an infinite ratio
+  });
+
+  // Test case 3: If there are no assets, the ratio should be 0
+  it("should return 0 when there are no assets", () => {
+    const sampleDataNoAssets = sampleDataForWorkingCapitalRatio.filter(
+      (data) => data.account_category !== AccountCategory.ASSETS,
+    );
+    const expectedRatio = 0;
+    const result = workingCapitalRatioCalculator.calculate(sampleDataNoAssets);
+    expect(result).toBe(expectedRatio);
+  });
+
+  // Test case 4: If there are no assets and liabilities, the ratio should be 0
+  it("should return 0 when there are no assets and liabilities", () => {
+    const sampleDataNoAssetsAndLiabilities =
+      sampleDataForWorkingCapitalRatio.filter(
+        (data) =>
+          data.account_category !== AccountCategory.ASSETS &&
+          data.account_category !== AccountCategory.LIABILITY,
+      );
+    const expectedRatio = 0;
+    const result = workingCapitalRatioCalculator.calculate(
+      sampleDataNoAssetsAndLiabilities,
+    );
+    expect(result).toBe(expectedRatio);
+  });
+
+  // Test case 5: If assets exceed liabilities, the ratio should be greater than 100%
+  it("should return a ratio greater than 100% when assets exceed liabilities", () => {
+    const sampleDataExcessAssets = [
+      ...sampleDataForWorkingCapitalRatio,
+      {
+        account_category: AccountCategory.ASSETS,
+        account_code: "102",
+        account_currency: "AUD",
+        account_identifier: "asset-3",
+        value_type: ValueType.Debit,
+        account_name: "Short-Term Investments",
+        account_type: AccountType.Current,
+        total_value: 15000, // Adding more assets
+      },
+    ];
+    const assets = 10000 + 5000 + 15000; // New asset value
+    const liabilities = 7000 - 3000; // Original liability value
+    const expectedRatio = (assets / liabilities) * 100; // (30000 / 4000) * 100 = 750%
+    const result = workingCapitalRatioCalculator.calculate(
+      sampleDataExcessAssets,
+    );
+    expect(result).toBeCloseTo(expectedRatio, 1);
+  });
+
+  // Test case 6: If liabilities exceed assets, the ratio should be less than 100%
+  it("should return a ratio less than 100% when liabilities exceed assets", () => {
+    const sampleDataExcessLiabilities = [
+      ...sampleDataForWorkingCapitalRatio,
+      {
+        account_category: AccountCategory.LIABILITY,
+        account_code: "202",
+        account_currency: "AUD",
+        account_identifier: "liability-3",
+        value_type: ValueType.Credit,
+        account_name: "Long-Term Debt",
+        account_type: AccountType.CurrentAccountPayable,
+        total_value: 20000, // Adding more liabilities
+      },
+    ];
+    const assets = 10000 + 5000; // Original asset value
+    const liabilities = 7000 - 3000 + 20000; // New liability value
+    const expectedRatio = (assets / liabilities) * 100; // (15000 / 24000) * 100 = 62.5%
+    const result = workingCapitalRatioCalculator.calculate(
+      sampleDataExcessLiabilities,
+    );
+    expect(result).toBeCloseTo(expectedRatio, 1);
   });
 });
