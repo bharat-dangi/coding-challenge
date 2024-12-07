@@ -20,6 +20,9 @@ const grossProfitMarginCalculator = MetricCalculatorFactory.getCalculator(
 const netProfitMarginCalculator = MetricCalculatorFactory.getCalculator(
   MetricsType.NetProfitMargin,
 );
+const workingCapitalRatioCalculator = MetricCalculatorFactory.getCalculator(
+  MetricsType.WorkingCapitalRatio,
+);
 
 // Calculate metrics
 const revenue = revenueCalculator.calculate(parsedData);
@@ -32,9 +35,11 @@ const netProfitMargin = netProfitMarginCalculator.calculate(parsedData, {
   revenue,
   expenses,
 });
+const workingCapitalRatio = workingCapitalRatioCalculator.calculate(parsedData);
 
 // Output results with proper formatting
 console.log("Revenue:", formatCurrency(revenue));
 console.log("Expenses:", formatCurrency(expenses));
 console.log("Gross Profit Margin:", formatPercentage(grossProfitMargin));
 console.log("Net Profit Margin:", formatPercentage(netProfitMargin));
+console.log("Working Capital Ratio:", formatPercentage(workingCapitalRatio));
