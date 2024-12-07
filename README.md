@@ -93,3 +93,44 @@ Working Capital Ratio: 95%
 If your program requires a special way to compile or a specific version of a toolset, please be sure to include that in your running instructions.
 
 __Thank you and good luck!__
+
+
+
+
+
+# Developer's Comments:
+
+## Instructions to run the application on local machine:
+1. First clone the project using command: `git clone git@github.com:bharat-dangi/coding-challenge.git`.
+2. Then switch your node version to `20`.
+3. After that, install the packages using command `npm install`.
+4. Then you can run the application on local using command `npm run dev`.
+5. You can run the unit tests using command `npm test`.
+
+
+## About Solution (High Level Description)
+My approach is center around building a modular, maintainable, and extensible system for calculating financial metrics, particularly for working capital ratio and other metrics such as revenue, expenses, and profit margins. I had designed this system in a way that allows easy addition of new metrics, while keeping the calculation logic isolated from data handling and presentation. The main design focuses on separation of concerns, encapsulation, and reusability.
+
+### About Design Patterns Used and Principles
+#### 1. Factory Design Pattern:
+I have used factory pattern (MetricCalculatorFactory) to create instances of different calculators based on the metric type. This helps in decoupling the metric calculation logic from the consumer code, making it easy to add or change metric calculations without affecting other parts of the system. It also centralizes the logic for creating calculators in one place, improving maintainability.
+
+#### 2. Strategy Design Pattern:
+The strategy pattern is implicitly used by having different classes for each metric calculator (e.g., WorkingCapitalRatioCalculator, RevenueCalculator). Each class encapsulates the logic for calculating a specific financial metric, allowing for flexible switching and extension of calculation methods. This avoids a large, monolithic method and keeps each metric calculation independent and easily replaceable.
+
+#### 3. Encapsulation:
+Each metric calculation logic is encapsulated within its own class, adhering to the single responsibility principle. This makes the code easier to understand, test, and maintain.
+
+#### 4. Separation of Concerns:
+I had separated the concerns of data manipulation, calculation, and presentation. Data is handled independently from the calculation logic (e.g., WorkingCapitalRatioCalculator), and there is separate formatting functions to handle the presentation of results (e.g., formatting currencies and percentages). This separation ensures that each part of the system can evolve independently without tightly coupling one part with another.
+
+#### 5. Reusable Utility Functions:
+I had made use of utility functions for formatting (like formatCurrency) and for testing purposes (e.g., helpers for calculating expected values in unit tests). These reusable utilities help reduce duplication of code and improve the system's overall efficiency.
+
+
+### Scalability and Extensibility
+#### Scalability: 
+The design is highly scalable. New metrics can be added by creating new calculator classes that implement the `IMetricCalculator` interface. This ensures that the application remains flexible and can evolve as more financial metrics need to be calculated in the future.
+
+#### Extensibility: 
+Our approach allows us to extend the functionality by adding new account categories, account types, or even new financial ratios. Since the calculator logic is abstracted into separate classes, adding new business logic or modifying existing logic becomes simple and does not impact other parts of the system.
