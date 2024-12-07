@@ -1,6 +1,9 @@
 import { MetricsType } from "../src/constants/metricsType.constant";
 import { MetricCalculatorFactory } from "../src/factories/metricCalculatorFactory";
-import { sampleData } from "./data/metrics.data";
+import {
+  sampleData,
+  sampleDataForWorkingCapitalRatio,
+} from "./data/metrics.data";
 
 // Initialize the calculators
 const revenueCalculator = MetricCalculatorFactory.getCalculator(
@@ -8,6 +11,9 @@ const revenueCalculator = MetricCalculatorFactory.getCalculator(
 );
 const expenseCalculator = MetricCalculatorFactory.getCalculator(
   MetricsType.Expense,
+);
+const grossProfitMarginCalculator = MetricCalculatorFactory.getCalculator(
+  MetricsType.GrossProfitMargin,
 );
 
 // Test cases for RevenueCalculator
@@ -67,5 +73,31 @@ describe("ExpenseCalculator", () => {
     ];
     const expense = expenseCalculator.calculate(negativeExpenseData);
     expect(expense).toBe(-500);
+  });
+});
+
+// Test cases for GrossProfitMarginCalculator
+describe("GrossProfitMarginCalculator", () => {
+  it("should calculate the correct gross profit margin", () => {
+    const margin = grossProfitMarginCalculator.calculate(sampleData, 53931.0); // Pass revenue as 53931.0
+    expect(margin).toBe(0); // No sales data in sample
+  });
+
+  it("should return 0% if no revenue data is passed", () => {
+    const margin = grossProfitMarginCalculator.calculate(sampleData, 0);
+    expect(margin).toBe(0);
+  });
+
+  it("should handle null values correctly", () => {
+    const margin = grossProfitMarginCalculator.calculate(null as any, null);
+    expect(margin).toBe(0);
+  });
+
+  it("should return 0% if no sales data is available", () => {
+    const noSalesData = sampleData.filter(
+      (item) => item.account_type !== "sales",
+    );
+    const margin = grossProfitMarginCalculator.calculate(noSalesData, 53931.0);
+    expect(margin).toBe(0);
   });
 });

@@ -1,4 +1,4 @@
-import { AccountCategory } from "../constants/accountCategory.constants";
+import { AccountCategory } from "../constants/accountCategory.constant";
 import { AccountData } from "../types/accountData.types";
 import { IMetricCalculator } from "./iMetricCalculator";
 
