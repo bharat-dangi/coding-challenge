@@ -15,6 +15,9 @@ const expenseCalculator = MetricCalculatorFactory.getCalculator(
 const grossProfitMarginCalculator = MetricCalculatorFactory.getCalculator(
   MetricsType.GrossProfitMargin,
 );
+const netProfitMarginCalculator = MetricCalculatorFactory.getCalculator(
+  MetricsType.NetProfitMargin,
+);
 
 // Test cases for RevenueCalculator
 describe("RevenueCalculator", () => {
@@ -99,5 +102,41 @@ describe("GrossProfitMarginCalculator", () => {
     );
     const margin = grossProfitMarginCalculator.calculate(noSalesData, 53931.0);
     expect(margin).toBe(0);
+  });
+});
+
+// Test cases for NetProfitMarginCalculator
+describe("NetProfitMarginCalculator", () => {
+  it("should calculate the correct net profit margin", () => {
+    const netMargin = netProfitMarginCalculator.calculate(sampleData, {
+      revenue: 53931.0,
+      expenses: 1830.18,
+    });
+    expect(netMargin).toBe(96.60644156422094); // (53931.0 - 1830.18) / 53931.0 = ~0.9667
+  });
+
+  it("should return 0% if there are no revenue or expenses", () => {
+    const margin = netProfitMarginCalculator.calculate([], {
+      revenue: 0,
+      expenses: 0,
+    });
+    expect(margin).toBe(0);
+  });
+
+  it("should handle null values correctly", () => {
+    const margin = netProfitMarginCalculator.calculate(null as any, {
+      revenue: 53931.0,
+      expenses: 1830.18,
+    });
+    expect(margin).toBe(96.60644156422094);
+  });
+
+  it("should return negative value when expenses exceed revenue", () => {
+    const margin = netProfitMarginCalculator.calculate(
+      sampleData,
+
+      { revenue: 1830.18, expenses: 53931.0 },
+    );
+    expect(margin).toBe(-2846.7593351473624); // Expenses > Revenue, so negative margin
   });
 });
